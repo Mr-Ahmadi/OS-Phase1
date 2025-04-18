@@ -101,12 +101,41 @@ runcmd(struct cmd *cmd)
       exit(1);
 
     else if(strcmp(ecmd->argv[0], "!") == 0){
-      if(strlen(ecmd->argv[1]) > 512) {
+
+      char message[513];
+      int pos = 0;
+      int flag = 0;
+
+      // Concatenate arguments with spaces
+      for (int i = 1; ecmd->argv[i]; i++) {
+        char *arg = ecmd->argv[i];
+        int arg_len = strlen(arg);
+        
+        // Add space between arguments
+        if (i > 1) {
+          if (pos >= 512) {
+            printf("Message too long\n");
+            flag = 1;
+          }
+          message[pos++] = ' ';
+        }
+        
+        // Copy argument
+        for (int j = 0; j < arg_len; j++) {
+          if (pos >= 512) {
+            printf("Message too long\n");
+            flag = 1;
+          }
+          message[pos++] = arg[j];
+        }
+      }
+      message[pos] = '\0';
+
+      if(flag == 1) {
         printf("Message too long\n");
-        exit(0);
       }
       else {
-        print_with_os_highlight(ecmd->argv[1]);
+        print_with_os_highlight(message);
       }
       exit(0);
     }
