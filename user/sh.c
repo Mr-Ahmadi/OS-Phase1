@@ -54,6 +54,28 @@ void panic(char*);
 struct cmd *parsecmd(char*);
 void runcmd(struct cmd*) __attribute__((noreturn));
 
+// Print the string with "os" highlighted in blue.
+void print_with_os_highlight(const char *s) {
+  const char *p = s;
+
+  while (*p) {
+    if (p[0] == 'o' && p[1] == 's') {
+      // Print "os" in blue using fprintf
+      fprintf(2, "\033[34mos\033[0m");
+      p += 2;
+    }
+     else {
+      // Print normal character
+      static char str[2];
+      str[0] = p[0];
+      str[1] = '\0';
+      printf("%s", str);
+      p++;
+    }
+  }
+  fprintf(1, "\n");
+}
+
 // Execute cmd.  Never returns.
 void
 runcmd(struct cmd *cmd)
@@ -74,12 +96,24 @@ runcmd(struct cmd *cmd)
 
   case EXEC:
     ecmd = (struct execcmd*)cmd;
+
     if(ecmd->argv[0] == 0)
       exit(1);
+
+    else if(strcmp(ecmd->argv[0], "!") == 0){
+      if(strlen(ecmd->argv[1]) > 512) {
+        printf("Message too long\n");
+        exit(0);
+      }
+      else {
+        print_with_os_highlight(ecmd->argv[1]);
+      }
+      exit(0);
+    }
+
     exec(ecmd->argv[0], ecmd->argv);
     fprintf(2, "exec %s failed\n", ecmd->argv[0]);
     break;
-
   case REDIR:
     rcmd = (struct redircmd*)cmd;
     close(rcmd->fd);
