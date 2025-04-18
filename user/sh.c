@@ -102,7 +102,7 @@ runcmd(struct cmd *cmd)
 
     else if(strcmp(ecmd->argv[0], "!") == 0){
 
-      char message[513];
+      char message[21];
       int pos = 0;
       int flag = 0;
 
@@ -113,8 +113,7 @@ runcmd(struct cmd *cmd)
         
         // Add space between arguments
         if (i > 1) {
-          if (pos >= 512) {
-            printf("Message too long\n");
+          if (pos >= 20) {
             flag = 1;
           }
           message[pos++] = ' ';
@@ -122,8 +121,7 @@ runcmd(struct cmd *cmd)
         
         // Copy argument
         for (int j = 0; j < arg_len; j++) {
-          if (pos >= 512) {
-            printf("Message too long\n");
+          if (pos >= 20) {
             flag = 1;
           }
           message[pos++] = arg[j];
